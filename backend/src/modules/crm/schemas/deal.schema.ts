@@ -33,10 +33,10 @@ export class Deal extends BaseDocument {
   ownerId: Types.ObjectId;
 
   @Prop()
-  expectedCloseDate: Date;
+  companyName: string;
 
   @Prop()
-  deletedAt?: Date;
+  expectedCloseDate: Date;
 }
 
 export const DealSchema = SchemaFactory.createForClass(Deal);

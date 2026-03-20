@@ -1,4 +1,4 @@
-import { Controller, Get, Delete, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Delete, Param, UseGuards, HttpCode, HttpStatus, Patch, Body } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -27,6 +27,15 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   async deleteOrganization(@Param('id') id: string) {
     return this.adminService.deleteOrganization(id);
+  }
+
+  @Patch('organizations/:id')
+  @Roles(Role.SuperAdmin)
+  async updateOrganization(
+    @Param('id') id: string,
+    @Body() data: { subscriptions?: string[], subscriptionPlan?: string }
+  ) {
+    return this.adminService.updateOrganization(id, data);
   }
 
   @Get('stats')

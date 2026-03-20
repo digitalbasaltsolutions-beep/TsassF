@@ -34,12 +34,25 @@ export class AdminService {
     return { success: true };
   }
 
+  async updateOrganization(id: string, data: { subscriptions?: string[], subscriptionPlan?: string }) {
+    const org = await this.orgModel.findById(id);
+    if (!org) throw new NotFoundException('Organization not found');
+
+    if (data.subscriptions) org.subscriptions = data.subscriptions;
+    if (data.subscriptionPlan) org.subscriptionPlan = data.subscriptionPlan;
+    
+    await org.save();
+    return org;
+  }
+
   async getGlobalStats() {
     const orgCount = await this.orgModel.countDocuments();
     const userCount = await this.userModel.countDocuments();
     return {
       totalOrganizations: orgCount,
       totalUsers: userCount,
+      activeSubscriptions: orgCount * 2, // Mock data
+      mrr: (orgCount * 99) + 1500, // Mock MRR based on orgs
       status: 'operational',
     };
   }

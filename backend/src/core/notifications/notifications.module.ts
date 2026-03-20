@@ -3,13 +3,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { NotificationsService } from './notifications.service.js';
 import { NotificationsController } from './notifications.controller.js';
 import { Notification, NotificationSchema } from './schemas/notification.schema.js';
+import { AuditLog, AuditLogSchema } from '../../shared/database/audit-log.schema.js';
 import { BullModule } from '@nestjs/bullmq';
 import { WhatsAppService } from './whatsapp.service.js';
 import { NotificationsProcessor } from './notifications.processor.js';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Notification.name, schema: NotificationSchema }]),
+    MongooseModule.forFeature([
+      { name: Notification.name, schema: NotificationSchema },
+      { name: AuditLog.name, schema: AuditLogSchema }
+    ]),
     BullModule.registerQueue({
       name: 'notifications',
     }),

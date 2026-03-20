@@ -25,4 +25,27 @@ export class AnalyticsService {
   async trackLimitHit(organizationId: string, usageType: string, userId?: string) {
     return this.trackEvent(organizationId, 'LIMIT_HIT', { usageType }, userId);
   }
+
+  async getRecentEvents(organizationId: string, limit: number = 10) {
+    return this.eventModel
+      .find({ organizationId: new Types.ObjectId(organizationId) })
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .lean()
+      .exec();
+  }
+
+  async getUsageOverview(organizationId: string) {
+    // This aggregates events or queries specific module counts
+    // For now, let's just return recent event counts as 'usage'
+    const stats = await this.eventModel.aggregate([
+      { $match: { organizationId: new Types.ObjectId(organizationId) } },
+      { $group: { _id: '$type', count: { $sum: 1 } } }
+    ]);
+    
+    return stats.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+  }
 }

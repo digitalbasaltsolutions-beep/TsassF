@@ -25,12 +25,10 @@ export class Contact extends BaseDocument {
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   ownerId: Types.ObjectId;
-
-  @Prop()
-  deletedAt?: Date;
 }
 
 export const ContactSchema = SchemaFactory.createForClass(Contact);
 ContactSchema.plugin(TenantPlugin);
 ContactSchema.index({ organizationId: 1, deletedAt: 1 });
+ContactSchema.index({ ownerId: 1, organizationId: 1, deletedAt: 1 });
 ContactSchema.index({ email: 1, organizationId: 1, deletedAt: 1 }, { unique: true });

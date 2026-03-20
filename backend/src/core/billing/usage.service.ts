@@ -8,6 +8,7 @@ import { Pipeline } from '../../modules/crm/schemas/pipeline.schema.js';
 import { Membership } from '../organizations/schemas/membership.schema.js';
 import { PLAN_LIMITS } from './constants/plan-limits.js';
 import { NotificationsService } from '../notifications/notifications.service.js';
+import { RedisService } from '../../shared/redis/redis.service.js';
 
 @Injectable()
 export class UsageService {
@@ -18,9 +19,14 @@ export class UsageService {
     @InjectModel(Pipeline.name) private pipelineModel: Model<Pipeline>,
     @InjectModel(Membership.name) private membershipModel: Model<Membership>,
     private notificationsService: NotificationsService,
+    private redisService: RedisService,
   ) {}
 
   async getUsage(organizationId: string) {
+    const cacheKey = `usage:${organizationId}`;
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     const orgId = new Types.ObjectId(organizationId);
     const sub = await this.subModel.findOne({ organizationId: orgId }).exec();
     const plan = sub?.plan || PlanType.Free;
@@ -50,7 +56,7 @@ export class UsageService {
       ).catch(() => {});
     }
 
-    return {
+    const result = {
       plan,
       usage: {
         contacts: contactsCount,
@@ -61,6 +67,9 @@ export class UsageService {
       limits,
       isNearLimit
     };
+
+    await this.redisService.set(cacheKey, JSON.stringify(result), 'EX', 300);
+    return result;
   }
 
   async checkLimit(organizationId: string, type: 'contacts' | 'deals' | 'members' | 'pipelines') {

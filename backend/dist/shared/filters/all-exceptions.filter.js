@@ -21,13 +21,28 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
         const message = exception instanceof common_1.HttpException
             ? exception.getResponse()
             : 'Internal server error';
-        this.logger.error(`HTTP Status: ${status} Error Message: ${JSON.stringify(message)}`);
-        response.status(status).json({
-            statusCode: status,
-            timestamp: new Date().toISOString(),
-            path: request.url,
-            message,
-        });
+        this.logger.error(`HTTP Status: ${status} Error Message: ${JSON.stringify(message)}`, exception instanceof Error ? exception.stack : String(exception));
+        const errorResponse = {
+            success: false,
+            data: null,
+            meta: {},
+            error: {
+                statusCode: status,
+                message: typeof message === 'object' && message !== null ? message.message || message : message,
+                path: request.url,
+                timestamp: new Date().toISOString(),
+            }
+        };
+        this.logger.error(JSON.stringify({
+            level: 'error',
+            message: 'Request failed',
+            method: request.method,
+            url: request.url,
+            status,
+            error: errorResponse.error,
+            stack: exception instanceof Error ? exception.stack : String(exception)
+        }));
+        response.status(status).json(errorResponse);
     }
 };
 exports.AllExceptionsFilter = AllExceptionsFilter;

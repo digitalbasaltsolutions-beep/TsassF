@@ -27,7 +27,7 @@ export class OrganizationsService {
 
     // Auto-create default CRM Pipeline & Stages
     try {
-      const pipeline = await this.crmService.createPipeline(savedOrg._id.toString(), {
+      const pipeline = await this.crmService.createPipeline(savedOrg._id.toString(), ownerId, {
         name: 'Sales Pipeline'
       });
 
@@ -39,7 +39,7 @@ export class OrganizationsService {
       ];
 
       for (const stage of defaultStages) {
-        await this.crmService.createStage(savedOrg._id.toString(), {
+        await this.crmService.createStage(savedOrg._id.toString(), ownerId, {
           ...stage,
           pipelineId: pipeline._id.toString()
         });
@@ -56,6 +56,10 @@ export class OrganizationsService {
     const memberships = await this.membershipModel.find({ userId: new Types.ObjectId(userId) }).exec();
     const orgIds = memberships.map(m => m.organizationId);
     return this.orgModel.find({ _id: { $in: orgIds } }).exec();
+  }
+
+  async getOrganizationById(id: string): Promise<Organization | null> {
+    return this.orgModel.findById(id).exec();
   }
 
   async getMembership(userId: string, organizationId: string): Promise<Membership | null> {

@@ -16,6 +16,9 @@ import { NotificationsModule } from './core/notifications/notifications.module';
 import { EcommerceModule } from './modules/ecommerce/ecommerce.module';
 import { AdminModule } from './core/admin/admin.module.js';
 import { AnalyticsModule } from './shared/analytics/analytics.module.js';
+import { MarketingModule } from './modules/marketing/marketing.module.js';
+import { WhatsappModule } from './modules/whatsapp/whatsapp.module.js';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -23,6 +26,10 @@ import { AnalyticsModule } from './shared/analytics/analytics.module.js';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60,
+      limit: 100,
+    }]),
     ClsModule.forRoot({
       global: true,
       middleware: { mount: true },
@@ -58,6 +65,8 @@ import { AnalyticsModule } from './shared/analytics/analytics.module.js';
     EcommerceModule,
     AdminModule,
     AnalyticsModule,
+    MarketingModule,
+    WhatsappModule,
   ],
   controllers: [AppController],
   providers: [AppService],

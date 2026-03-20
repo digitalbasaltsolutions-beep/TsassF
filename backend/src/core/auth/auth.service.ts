@@ -103,18 +103,50 @@ export class AuthService {
     return { success: true };
   }
 
+  async getProfile(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new UnauthorizedException('User not found');
+    
+    const memberships = await this.organizationsService.getUserOrganizations(userId);
+    
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      isOnboarded: user.isOnboarded,
+      completedSteps: (user as any).completedSteps || ['org'], // Default step 1 is done by registration
+      memberships
+    };
+  }
+
   private async generateTokens(userId: string, organizationId: string | undefined, email: string, role: string, isOnboarded: boolean = true) {
     const payload = { sub: userId, email, organizationId, role, isOnboarded };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '8h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     // Store refresh token in Redis for validation/logout
     await this.redisService.set(`refresh_token:${userId}`, refreshToken, 'EX', 7 * 24 * 60 * 60);
 
+    let orgData = null;
+    let subscriptions = ['crm'];
+    let plan = 'Free';
+    
+    if (organizationId) {
+      const org = await this.organizationsService.getOrganizationById(organizationId);
+      if (org) {
+        orgData = org;
+        subscriptions = org.subscriptions || ['crm'];
+        plan = org.subscriptionPlan || 'Free';
+      }
+    }
+
     return {
       accessToken,
       refreshToken,
-      user: { id: userId, email, organizationId, role, isOnboarded }
+      user: { id: userId, email, organizationId, role, isOnboarded },
+      organization: orgData,
+      subscriptions,
+      plan
     };
   }
 }

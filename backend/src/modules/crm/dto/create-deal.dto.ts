@@ -27,6 +27,10 @@ export class CreateDealDto {
   @IsOptional()
   ownerId?: string;
 
+  @IsString()
+  @IsOptional()
+  companyName?: string;
+
   @IsDateString()
   @IsOptional()
   expectedCloseDate?: string;

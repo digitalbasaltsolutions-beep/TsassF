@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { BaseDocument } from '../../../shared/database/base.schema';
+import { BaseDocument } from '../../../shared/database/base.schema.js';
 export declare enum DealStatus {
     Open = "Open",
     Won = "Won",
@@ -9,8 +9,11 @@ export declare class Deal extends BaseDocument {
     title: string;
     value: number;
     status: DealStatus;
-    pipelineStage: string;
+    pipelineId: Types.ObjectId;
+    stageId: Types.ObjectId;
     contactId: Types.ObjectId;
+    ownerId: Types.ObjectId;
+    expectedCloseDate: Date;
 }
 export declare const DealSchema: import("mongoose").Schema<Deal, import("mongoose").Model<Deal, any, any, any, (import("mongoose").Document<unknown, any, Deal, any, import("mongoose").DefaultSchemaOptions> & Deal & Required<{
     _id: Types.ObjectId;
@@ -58,6 +61,15 @@ export declare const DealSchema: import("mongoose").Schema<Deal, import("mongoos
     }, "id"> & {
         id: string;
     }> | undefined;
+    deletedAt?: import("mongoose").SchemaDefinitionProperty<Date | undefined, Deal, import("mongoose").Document<unknown, {}, Deal, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
     value?: import("mongoose").SchemaDefinitionProperty<number, Deal, import("mongoose").Document<unknown, {}, Deal, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
@@ -67,7 +79,7 @@ export declare const DealSchema: import("mongoose").Schema<Deal, import("mongoos
     }, "id"> & {
         id: string;
     }> | undefined;
-    status?: import("mongoose").SchemaDefinitionProperty<DealStatus, Deal, import("mongoose").Document<unknown, {}, Deal, {
+    ownerId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Deal, import("mongoose").Document<unknown, {}, Deal, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
         _id: Types.ObjectId;
@@ -85,7 +97,25 @@ export declare const DealSchema: import("mongoose").Schema<Deal, import("mongoos
     }, "id"> & {
         id: string;
     }> | undefined;
-    pipelineStage?: import("mongoose").SchemaDefinitionProperty<string, Deal, import("mongoose").Document<unknown, {}, Deal, {
+    status?: import("mongoose").SchemaDefinitionProperty<DealStatus, Deal, import("mongoose").Document<unknown, {}, Deal, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    pipelineId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Deal, import("mongoose").Document<unknown, {}, Deal, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    stageId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Deal, import("mongoose").Document<unknown, {}, Deal, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
         _id: Types.ObjectId;
@@ -95,6 +125,15 @@ export declare const DealSchema: import("mongoose").Schema<Deal, import("mongoos
         id: string;
     }> | undefined;
     contactId?: import("mongoose").SchemaDefinitionProperty<Types.ObjectId, Deal, import("mongoose").Document<unknown, {}, Deal, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    expectedCloseDate?: import("mongoose").SchemaDefinitionProperty<Date, Deal, import("mongoose").Document<unknown, {}, Deal, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Deal & Required<{
         _id: Types.ObjectId;

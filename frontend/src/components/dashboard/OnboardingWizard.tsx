@@ -5,7 +5,9 @@ import { useAuthStore } from '@/store/authStore';
 import apiClient from '@/lib/apiClient';
 
 export const OnboardingWizard: React.FC = () => {
-  const { user, setCredentials, accessToken } = useAuthStore();
+  const user = useAuthStore(state => state.user);
+  const setCredentials = useAuthStore(state => state.setCredentials);
+  const accessToken = useAuthStore(state => state.accessToken);
   const [step, setStep] = useState(0);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -36,8 +38,15 @@ export const OnboardingWizard: React.FC = () => {
     try {
       await apiClient.patch('/users/onboarding-complete');
       // Update local state without logout
-      if (user && accessToken) {
-        setCredentials(accessToken, { ...user, isOnboarded: true }, null);
+      const { refreshToken, subscriptions, plan } = useAuthStore.getState();
+      if (user && accessToken && refreshToken) {
+        setCredentials(
+          accessToken, 
+          refreshToken, 
+          { ...user, isOnboarded: true }, 
+          subscriptions, 
+          plan
+        );
       }
       setIsClosing(true);
     } catch (error) {

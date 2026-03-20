@@ -9,6 +9,8 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { Skeleton } from '@/components/shared/Skeleton';
+
 export default function UsageOverview() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,15 @@ export default function UsageOverview() {
   };
 
   if (loading || !data) return (
-    <div className="p-6 bg-zinc-900/50 rounded-3xl border border-zinc-800 animate-pulse h-48" />
+    <div className="w-full h-full p-6 bg-zinc-950/30 rounded-3xl border border-zinc-800/80 space-y-6">
+      <Skeleton className="h-4 w-24 bg-zinc-800" />
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-full bg-zinc-800" />
+        <Skeleton className="h-8 w-full bg-zinc-800" />
+        <Skeleton className="h-8 w-full bg-zinc-800" />
+      </div>
+      <Skeleton className="h-10 w-full rounded-2xl bg-zinc-800" />
+    </div>
   );
 
   const { usage, limits, plan, isNearLimit } = data;

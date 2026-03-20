@@ -15,6 +15,7 @@ const mongoose_2 = require("mongoose");
 class BaseDocument extends mongoose_2.Document {
     organizationId;
     createdBy;
+    deletedAt;
 }
 exports.BaseDocument = BaseDocument;
 __decorate([
@@ -25,4 +26,8 @@ __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, required: false }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], BaseDocument.prototype, "createdBy", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Date, default: null, index: true }),
+    __metadata("design:type", Date)
+], BaseDocument.prototype, "deletedAt", void 0);
 //# sourceMappingURL=base.schema.js.map

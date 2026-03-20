@@ -39,6 +39,9 @@ export function TenantPlugin(schema: Schema) {
         const role = cls.get('role');
 
         if (role === Role.SuperAdmin) return;
+        
+        // Soft delete filtering: exclude anything that has a deletedAt timestamp
+        this.where({ deletedAt: null });
 
         if (organizationId) {
           const query = this.getQuery();

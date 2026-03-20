@@ -8,10 +8,10 @@ export const PLAN_LIMITS = {
     pipelines: 1,
   },
   [PlanType.Pro]: {
-    contacts: 1000,
-    deals: 100,
-    members: 10,
-    pipelines: 5,
+    contacts: Infinity,
+    deals: Infinity,
+    members: Infinity,
+    pipelines: Infinity,
   },
   [PlanType.Enterprise]: {
     contacts: Infinity,

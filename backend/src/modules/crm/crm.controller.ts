@@ -22,7 +22,7 @@ export class CrmController {
   @Roles(Role.Admin, Role.Owner, Role.Member)
   @SetUsageType('contacts')
   async createContact(@Req() req: any, @Body() data: CreateContactDto) {
-    return this.crmService.createContact(req.user.organizationId, { ...data, ownerId: data.ownerId || req.user.userId });
+    return this.crmService.createContact(req.user.organizationId, req.user.userId, data);
   }
 
   @Get('contacts')
@@ -45,19 +45,32 @@ export class CrmController {
   @Put('contacts/:id')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async updateContact(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreateContactDto>) {
-    return this.crmService.updateContact(req.user.organizationId, id, data);
+    return this.crmService.updateContact(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('contacts/:id')
   @Roles(Role.Admin, Role.Owner)
   async deleteContact(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.softDeleteContact(req.user.organizationId, id);
+    return this.crmService.softDeleteContact(req.user.organizationId, req.user.userId, id);
   }
 
   @Post('contacts/bulk-delete')
   @Roles(Role.Admin, Role.Owner)
   async bulkDeleteContacts(@Req() req: any, @Body('ids') ids: string[]) {
-    return this.crmService.bulkDeleteContacts(req.user.organizationId, ids);
+    return this.crmService.bulkDeleteContacts(req.user.organizationId, req.user.userId, ids);
+  }
+
+  @Post('contacts/bulk-create')
+  @Roles(Role.Admin, Role.Owner)
+  @SetUsageType('contacts') // Check usage for bulk imports
+  async bulkCreateContacts(@Req() req: any, @Body('contacts') contacts: CreateContactDto[]) {
+    return this.crmService.bulkCreateContacts(req.user.organizationId, req.user.userId, contacts);
+  }
+
+  @Patch('contacts/:id/restore')
+  @Roles(Role.Admin, Role.Owner)
+  async restoreContact(@Req() req: any, @Param('id') id: string) {
+    return this.crmService.restoreContact(req.user.organizationId, req.user.userId, id);
   }
 
   // --- Pipelines & Stages ---
@@ -65,7 +78,7 @@ export class CrmController {
   @Roles(Role.Admin, Role.Owner)
   @SetUsageType('pipelines')
   async createPipeline(@Req() req: any, @Body() data: CreatePipelineDto) {
-    return this.crmService.createPipeline(req.user.organizationId, data);
+    return this.crmService.createPipeline(req.user.organizationId, req.user.userId, data);
   }
 
   @Get('pipelines')
@@ -77,19 +90,19 @@ export class CrmController {
   @Put('pipelines/:id')
   @Roles(Role.Admin, Role.Owner)
   async updatePipeline(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreatePipelineDto>) {
-    return this.crmService.updatePipeline(req.user.organizationId, id, data);
+    return this.crmService.updatePipeline(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('pipelines/:id')
   @Roles(Role.Admin, Role.Owner)
   async deletePipeline(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.deletePipeline(req.user.organizationId, id);
+    return this.crmService.deletePipeline(req.user.organizationId, req.user.userId, id);
   }
 
   @Post('stages')
   @Roles(Role.Admin, Role.Owner)
   async createStage(@Req() req: any, @Body() data: CreateStageDto) {
-    return this.crmService.createStage(req.user.organizationId, data);
+    return this.crmService.createStage(req.user.organizationId, req.user.userId, data);
   }
 
   @Get('pipelines/:id/stages')
@@ -101,19 +114,19 @@ export class CrmController {
   @Put('stages/:id')
   @Roles(Role.Admin, Role.Owner)
   async updateStage(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreateStageDto>) {
-    return this.crmService.updateStage(req.user.organizationId, id, data);
+    return this.crmService.updateStage(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('stages/:id')
   @Roles(Role.Admin, Role.Owner)
   async deleteStage(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.deleteStage(req.user.organizationId, id);
+    return this.crmService.deleteStage(req.user.organizationId, req.user.userId, id);
   }
 
   @Patch('pipelines/:id/reorder-stages')
   @Roles(Role.Admin, Role.Owner)
   async reorderStages(@Req() req: any, @Param('id') id: string, @Body('stages') stages: { id: string, order: number }[]) {
-    return this.crmService.reorderStages(req.user.organizationId, id, stages);
+    return this.crmService.reorderStages(req.user.organizationId, req.user.userId, id, stages);
   }
 
   // --- Deals ---
@@ -121,7 +134,7 @@ export class CrmController {
   @Roles(Role.Admin, Role.Owner, Role.Member)
   @SetUsageType('deals')
   async createDeal(@Req() req: any, @Body() data: CreateDealDto) {
-    return this.crmService.createDeal(req.user.organizationId, { ...data, ownerId: data.ownerId || req.user.userId });
+    return this.crmService.createDeal(req.user.organizationId, req.user.userId, data);
   }
 
   @Get('deals')
@@ -145,26 +158,38 @@ export class CrmController {
   @Put('deals/:id')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async updateDeal(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreateDealDto>) {
-    return this.crmService.updateDeal(req.user.organizationId, id, data);
+    return this.crmService.updateDeal(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('deals/:id')
   @Roles(Role.Admin, Role.Owner)
   async deleteDeal(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.deleteDeal(req.user.organizationId, id);
+    return this.crmService.deleteDeal(req.user.organizationId, req.user.userId, id);
   }
 
   @Patch('deals/:id/move-stage')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async moveDealStage(@Req() req: any, @Param('id') id: string, @Body('stageId') stageId: string) {
-    return this.crmService.moveDealStage(req.user.organizationId, id, stageId);
+    return this.crmService.moveDealStage(req.user.organizationId, req.user.userId, id, stageId);
+  }
+
+  @Post('deals/bulk-move')
+  @Roles(Role.Admin, Role.Owner, Role.Member)
+  async bulkMoveDealsStage(@Req() req: any, @Body('ids') ids: string[], @Body('stageId') stageId: string) {
+    return this.crmService.bulkMoveDealsStage(req.user.organizationId, req.user.userId, ids, stageId);
+  }
+
+  @Patch('deals/:id/restore')
+  @Roles(Role.Admin, Role.Owner)
+  async restoreDeal(@Req() req: any, @Param('id') id: string) {
+    return this.crmService.restoreDeal(req.user.organizationId, req.user.userId, id);
   }
 
   // --- Activities & Timeline ---
   @Post('activities')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async logActivity(@Req() req: any, @Body() data: CreateActivityDto) {
-    return this.crmService.logActivity(req.user.organizationId, { ...data, ownerId: data.ownerId || req.user.userId });
+    return this.crmService.logActivity(req.user.organizationId, req.user.userId, data);
   }
 
   @Get('activities')
@@ -182,13 +207,13 @@ export class CrmController {
   @Put('activities/:id')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async updateActivity(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreateActivityDto>) {
-    return this.crmService.updateActivity(req.user.organizationId, id, data);
+    return this.crmService.updateActivity(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('activities/:id')
   @Roles(Role.Admin, Role.Owner)
   async deleteActivity(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.deleteActivity(req.user.organizationId, id);
+    return this.crmService.deleteActivity(req.user.organizationId, req.user.userId, id);
   }
 
   @Get('timeline')
@@ -201,19 +226,25 @@ export class CrmController {
   @Post('notes')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async addNote(@Req() req: any, @Body() data: CreateNoteDto) {
-    return this.crmService.addNote(req.user.organizationId, { ...data, ownerId: data.ownerId || req.user.userId });
+    return this.crmService.addNote(req.user.organizationId, req.user.userId, data);
+  }
+
+  @Get('notes')
+  @Roles(Role.Admin, Role.Owner, Role.Member)
+  async getNotes(@Req() req: any, @Query('linkedEntityId') linkedEntityId: string, @Query('page') page?: number, @Query('limit') limit?: number) {
+    return this.crmService.getNotes(req.user.organizationId, { linkedEntityId, page, limit });
   }
 
   @Put('notes/:id')
   @Roles(Role.Admin, Role.Owner, Role.Member)
   async updateNote(@Req() req: any, @Param('id') id: string, @Body() data: Partial<CreateNoteDto>) {
-    return this.crmService.updateNote(req.user.organizationId, id, data);
+    return this.crmService.updateNote(req.user.organizationId, req.user.userId, id, data);
   }
 
   @Delete('notes/:id')
   @Roles(Role.Admin, Role.Owner)
   async deleteNote(@Req() req: any, @Param('id') id: string) {
-    return this.crmService.deleteNote(req.user.organizationId, id);
+    return this.crmService.deleteNote(req.user.organizationId, req.user.userId, id);
   }
 
   // --- WhatsApp Integration ---

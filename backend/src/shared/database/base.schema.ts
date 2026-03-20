@@ -7,4 +7,7 @@ export class BaseDocument extends Document {
 
   @Prop({ type: Types.ObjectId, required: false })
   createdBy?: Types.ObjectId;
+
+  @Prop({ type: Date, default: null, index: true })
+  deletedAt?: Date;
 }

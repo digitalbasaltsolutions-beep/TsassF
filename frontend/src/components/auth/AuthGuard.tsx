@@ -4,7 +4,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { accessToken } = useAuthStore();
+  const accessToken = useAuthStore(state => state.accessToken);
+  const user = useAuthStore(state => state.user);
   const router = useRouter();
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
@@ -16,18 +17,16 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isMounted) return;
 
-    const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
-    const isPublicRoute = pathname === '/' || pathname.startsWith('/home');
+    const isAuthRoute = pathname === '/login' || pathname === '/register';
+    const isPublicRoute = pathname === '/' || pathname === '/home';
+    const isAuthenticated = !!accessToken && !!user;
 
-    if (!isMounted) return;
-
-    if (!accessToken && !isAuthRoute && !isPublicRoute) {
+    if (!isAuthenticated && !isAuthRoute && !isPublicRoute) {
       router.replace('/login');
-    } else if (accessToken && (isAuthRoute || isPublicRoute)) {
-      // Redirect to dashboard if logged in and trying to access login/register OR home/root
+    } else if (isAuthenticated && (isAuthRoute || isPublicRoute)) {
       router.replace('/dashboard');
     }
-  }, [accessToken, pathname, router, isMounted]);
+  }, [accessToken, user, pathname, isMounted, router]);
 
   if (!isMounted) return null; // Prevent hydration errors
 

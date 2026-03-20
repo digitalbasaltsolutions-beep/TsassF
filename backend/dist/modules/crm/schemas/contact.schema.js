@@ -11,20 +11,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContactSchema = exports.Contact = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const base_schema_1 = require("../../../shared/database/base.schema");
-let Contact = class Contact extends base_schema_1.BaseDocument {
-    name;
+const mongoose_2 = require("mongoose");
+const base_schema_js_1 = require("../../../shared/database/base.schema.js");
+const tenant_plugin_js_1 = require("../../../shared/database/tenant.plugin.js");
+let Contact = class Contact extends base_schema_js_1.BaseDocument {
+    firstName;
+    lastName;
     email;
     phone;
     company;
+    tags;
+    ownerId;
 };
 exports.Contact = Contact;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], Contact.prototype, "name", void 0);
+], Contact.prototype, "firstName", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Contact.prototype, "lastName", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ index: true }),
     __metadata("design:type", String)
 ], Contact.prototype, "email", void 0);
 __decorate([
@@ -35,8 +44,19 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Contact.prototype, "company", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [String], default: [] }),
+    __metadata("design:type", Array)
+], Contact.prototype, "tags", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User' }),
+    __metadata("design:type", mongoose_2.Types.ObjectId)
+], Contact.prototype, "ownerId", void 0);
 exports.Contact = Contact = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Contact);
 exports.ContactSchema = mongoose_1.SchemaFactory.createForClass(Contact);
+exports.ContactSchema.plugin(tenant_plugin_js_1.TenantPlugin);
+exports.ContactSchema.index({ organizationId: 1, deletedAt: 1 });
+exports.ContactSchema.index({ email: 1, organizationId: 1, deletedAt: 1 }, { unique: true });
 //# sourceMappingURL=contact.schema.js.map

@@ -4,7 +4,8 @@ import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const { user, accessToken } = useAuthStore();
+  const user = useAuthStore(state => state.user);
+  const accessToken = useAuthStore(state => state.accessToken);
   const router = useRouter();
 
   useEffect(() => {

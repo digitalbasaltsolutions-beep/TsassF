@@ -12,6 +12,9 @@ export class Organization extends BaseDocument {
 
   @Prop({ type: String, default: 'Free' })
   subscriptionPlan: string;
+
+  @Prop({ type: [String], default: ['crm'] })
+  subscriptions: string[];
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
