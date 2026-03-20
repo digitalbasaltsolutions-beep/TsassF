@@ -207,7 +207,16 @@ export default function PipelinesPage() {
         setPipelines(ps => [...ps, res.data]);
         toast.success('Pipeline created');
       }
-    } catch { toast.error('Failed to save'); loadPipelines(); }
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const message = err?.apiError?.message || err?.response?.data?.message;
+      if (status === 403) {
+        toast.error(message || 'Pipeline limit reached. Please upgrade your plan to create more pipelines.', { duration: 6000 });
+      } else {
+        toast.error('Failed to save pipeline. Please try again.');
+      }
+      loadPipelines();
+    }
     finally { setIsSaving(false); }
   };
 

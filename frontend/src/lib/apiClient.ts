@@ -49,7 +49,9 @@ apiClient.interceptors.response.use(
     (error as any).apiError = errorData;
 
     // Handle 401 Unauthorized — try to refresh the token once
-    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+    // NOTE: 403 Forbidden (e.g. plan limits) is intentionally NOT handled here;
+    // it should propagate to the calling code so a proper message can be shown.
+    if (error.response?.status === 401 && !originalRequest._retry) {
       // If already refreshing, queue the request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
