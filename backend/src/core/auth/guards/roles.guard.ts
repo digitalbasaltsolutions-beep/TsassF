@@ -19,7 +19,14 @@ export class RolesGuard implements CanActivate {
     }
 
     const { user } = context.switchToHttp().getRequest();
-    if (!user || !user.organizationId) {
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
+    // SuperAdmin can access any route requiring roles, even without organizationId
+    if (user.role === Role.SuperAdmin) return true;
+
+    if (!user.organizationId) {
       throw new ForbiddenException('User does not have an active organization context');
     }
 

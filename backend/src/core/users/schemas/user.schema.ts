@@ -11,6 +11,12 @@ export class User extends BaseDocument {
 
   @Prop({ required: true })
   passwordHash: string;
+
+  @Prop({ type: [String], default: [] })
+  completedSteps: string[];
+
+  @Prop({ type: Boolean, default: false })
+  isOnboarded: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

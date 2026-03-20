@@ -27,9 +27,9 @@ export default function RegisterPage() {
         password,
         organizationName: orgName,
       });
-      const { accessToken } = response.data;
+      const { accessToken, refreshToken, user } = response.data;
       
-      setCredentials(accessToken, { email, name }, null); 
+      setCredentials(accessToken, refreshToken, user); 
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');

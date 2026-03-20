@@ -6,5 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <div className="scroll-smooth antialiased selection:bg-blue-500/30">
+      {children}
+    </div>
+  );
 }

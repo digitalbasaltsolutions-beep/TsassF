@@ -17,6 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const cls = ClsServiceManager.getClsService();
     if (cls && cls.isActive()) {
       cls.set('userId', user.userId);
+      cls.set('role', user.role);
       if (user.organizationId) {
         cls.set('organizationId', user.organizationId);
       }

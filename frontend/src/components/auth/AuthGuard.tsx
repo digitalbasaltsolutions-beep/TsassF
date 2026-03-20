@@ -19,9 +19,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
     const isPublicRoute = pathname === '/' || pathname.startsWith('/home');
 
+    if (!isMounted) return;
+
     if (!accessToken && !isAuthRoute && !isPublicRoute) {
       router.replace('/login');
-    } else if (accessToken && isAuthRoute) {
+    } else if (accessToken && (isAuthRoute || isPublicRoute)) {
+      // Redirect to dashboard if logged in and trying to access login/register OR home/root
       router.replace('/dashboard');
     }
   }, [accessToken, pathname, router, isMounted]);

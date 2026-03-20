@@ -19,4 +19,8 @@ export class UsersService {
   async findById(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }
+
+  async updateOnboardingStatus(userId: string, status: boolean): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(userId, { isOnboarded: status }, { new: true }).exec();
+  }
 }

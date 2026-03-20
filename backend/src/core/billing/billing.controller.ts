@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, UseGuards, Req, Headers } from '@nestjs/common';
 import { BillingService } from './billing.service';
+import { UsageService } from './usage.service';
 import { PlanType } from './schemas/subscription.schema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -8,7 +9,16 @@ import { Role } from '../../shared/constants/roles.enum';
 
 @Controller('billing')
 export class BillingController {
-  constructor(private readonly billingService: BillingService) {}
+  constructor(
+    private readonly billingService: BillingService,
+    private readonly usageService: UsageService,
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('usage')
+  async getUsage(@Req() req: any) {
+    return this.usageService.getUsage(req.user.organizationId);
+  }
 
   @Get('plans')
   getPlans() {
